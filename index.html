@@ -1,0 +1,368 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Verni_AiO_Extension</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="./js/CSInterface.js"></script>
+  <script src="./js/main.js"></script>
+</head>
+<body>
+  <div class="verni-version-badge">v.1.12.240</div>
+
+  <div id="verniProgressOverlay" class="verni-progress-overlay" aria-hidden="true">
+    <div class="verni-progress-card">
+      <button id="verniProgressMinimize" class="verni-progress-minimize" type="button" title="Zmniejsz pasek postepu" aria-label="Zmniejsz pasek postepu">−</button>
+      <div id="verniProgressText" class="verni-progress-text">Przetwarzanie...</div>
+      <div class="verni-progress-track">
+        <div id="verniProgressBar" class="verni-progress-bar"></div>
+      </div>
+      <div id="verniProgressPercent" class="verni-progress-percent">0%</div>
+      <div id="verniProgressDetail" class="verni-progress-detail hidden"></div>
+    </div>
+  </div>
+
+  <!-- HEADER: pasek + logo + tytuł -->
+  <div class="header-bar">
+    <img src="./pasek.png" alt="" class="pasek-bg" />
+    <img src="./logo_new.png" alt="Verni" class="header-logo" />
+  </div>
+  <div class="plugin-title" aria-hidden="true"></div>
+
+  <div class="quick-tools-bar">
+    <div class="quick-tools-left">
+      <button id="unNestBtn" class="un-nest-btn" title="UN NEST — rozpakuj zaznaczoną sekwencję NEST" aria-label="UN NEST">
+        <img src="./icon/UNNEST.png" srcset="./icon/UNNEST.png 1x, ./icon/UNNEST_2X.png 2x" alt="UN NEST" class="un-nest-img" />
+      </button>
+      <button id="multiNestBtn" class="multi-nest-btn" title="MULTI-NEST — zrob osobny NEST dla kazdego zaznaczonego klipu" aria-label="MULTI-NEST">
+        <img src="./icon/MULTINEST.png" srcset="./icon/MULTINEST.png 1x, ./icon/MULTINEST_2X.png 2x" alt="MULTI-NEST" class="multi-nest-img" />
+      </button>
+      <button id="unNestUndoBtn" class="un-nest-undo-btn" title="Cofnij ostatni UN NEST albo MULTI-NEST" aria-label="Cofnij ostatni UN NEST albo MULTI-NEST">
+        <img src="./icon/REVERSE.png" srcset="./icon/REVERSE.png 1x, ./icon/REVERSE_2X.png 2x" alt="Cofnij ostatni UN NEST albo MULTI-NEST" class="un-nest-undo-img" />
+      </button>
+      <button id="mediaOfflineBtn" class="media-offline-btn" title="MEDIA OFFLINE — znajdz i podlinkuj brakujace media po nazwie pliku" aria-label="MEDIA OFFLINE">
+        <img src="./icon/MEDIA_OFFLINE.png" srcset="./icon/MEDIA_OFFLINE.png 1x, ./icon/MEDIA_OFFLINE_2X.png 2x" alt="MEDIA OFFLINE" class="media-offline-img" />
+      </button>
+    </div>
+
+    <div class="header-right-tools">
+      <div class="project-time-widget" title="Czas pracy przy aktualnie otwartym projekcie">
+        <img src="./icon/STOPER.png" srcset="./icon/STOPER.png 1x, ./icon/STOPER_2X.png 2x" alt="Stoper" class="project-timer-icon" />
+        <span id="projectTimerText" class="project-timer-text">00:00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden always-on checkboxes -->
+  <input id="moveVideoNearAE" type="checkbox" checked style="display:none" />
+  <input id="moveNests" type="checkbox" checked style="display:none" />
+  <input id="autoStart" type="checkbox" checked style="display:none" />
+  <input id="folderSyncEnabled" type="checkbox" checked style="display:none" />
+
+  <!-- SCROLL WRAPPER -->
+  <div class="scroll-wrap">
+
+    <!-- GŁÓWNA ZAKŁADKA 1: Segregowanie -->
+    <div class="main-section" id="main-segregowanie">
+      <div class="main-header" onclick="toggleMain('segregowanie')">
+        <span class="main-arrow" id="marrow-segregowanie">▶</span>
+        <span class="main-title-text">Segregowanie plików w Projekcie</span>
+        <button id="organizerAutoCheckToggle" class="ios-toggle is-on" type="button" aria-label="Włącz lub wyłącz Auto-Check segregowania" aria-pressed="true">
+          <span class="ios-toggle-knob"></span>
+        </button>
+      </div>
+      <div class="main-body" id="mbody-segregowanie">
+
+
+        <!-- Segregowanie sekwencji -->
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('sec-nest')">
+            <span class="sub-arrow" id="arrow-sec-nest">▶</span>
+            Segregowanie sekwencji NEST
+          </div>
+          <div class="sub-body" id="sec-nest">
+            <label>
+              Nazwa BIN'u dla sekwencji NEST
+              <input id="nestBinName" value="NEST" />
+            </label>
+            <label>
+              Słowa kluczowe dla sekwencji NEST (zapisz po przecinku) <span class="red-note">Najlepiej zostaw domyślnie</span>
+              <input id="nestKeywords" value="Nested Sequence,Nested,Nest,NEST" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Segregowanie plików zewnętrznych wtyczek -->
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('sec-external')">
+            <span class="sub-arrow" id="arrow-sec-external">▶</span>
+            Segregowanie plików zewnętrznych wtyczek
+          </div>
+          <div class="sub-body" id="sec-external">
+            <label>
+              Nazwa BIN'u dla plików zewnętrznych wtyczek
+              <input id="externalBinName" value="External Extension" />
+            </label>
+            <label>
+              Słowa kluczowe dla zewnętrznych wtyczek (zapisz po przecinku) <span class="red-note">Najlepiej zostaw domyślnie</span>
+              <input id="externalKeywords" value="Atom,Motion Graphics Template Media,FireCut,Premiere Composer Files" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Segregowanie Dynamic Relink AE -->
+        <div class="sub-section">
+          <div class="sub-header" onclick="toggleSub('sec-ae')">
+            <span class="sub-arrow" id="arrow-sec-ae">▶</span>
+            Segregowanie plików Dynamic Relink AE
+          </div>
+          <div class="sub-body" id="sec-ae">
+            <label>
+              Nazwa BIN'u dla plików Dynamic Relink AE
+              <input id="aeBinName" value="AE Dynamic Relink" />
+            </label>
+            <label>
+              Słowa kluczowe dla Dynamic Link AE (zapisz po przecinku) <span class="red-note">Najlepiej zostaw domyślnie</span>
+              <input id="keywords" value="Render and Replace,Rendered,rendered,_Render,_Rendered" />
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- GŁÓWNA ZAKŁADKA 2: Synchronizacja Wielu Kamer -->
+    <div class="main-section" id="main-timecode">
+      <div class="main-header" onclick="toggleMain('timecode')">
+        <span class="main-arrow" id="marrow-timecode">▶</span>
+        <span>Synchronizacja Wielu Kamer</span>
+      </div>
+      <div class="main-body" id="mbody-timecode">
+
+        <div class="tc-content">
+          <p class="section-desc">Zaznacz w oknie projektu pliki audio/wideo nagrane z timecode, ustaw aktywną sekwencję i kliknij przycisk synchronizacji.</p>
+          <label>
+            Punkt synchronizacji
+            <select id="tcSyncMode">
+              <option value="sequenceTc">Synchronizacja o godzinie nagrań</option>
+              <option value="clipsTc" selected>Synchronizacja na początku sekwencji</option>
+            </select>
+          </label>
+          <label>
+            Typ Ustawienia
+            <select id="tcInsertType">
+              <option value="Video">Tylko Wideo</option>
+              <option value="Audio">Tylko Audio</option>
+              <option value="Both" selected>Wideo + Audio</option>
+            </select>
+          </label>
+          <div class="row">
+            <button id="syncTimecode">Synchronizuj</button>
+          </div>
+
+          <!-- Offset ukryty w pod-zakładce -->
+          <div class="sub-section">
+            <div class="sub-header" onclick="toggleSub('sec-tc-offset')">
+              <span class="sub-arrow" id="arrow-sec-tc-offset">▶</span>
+              Offset / przesunięcie startu
+            </div>
+            <div class="sub-body" id="sec-tc-offset">
+              <label>
+                Offset / przesunięcie startu
+                <input id="tcOffset" value="00:00:00:00" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- GŁÓWNA ZAKŁADKA 3: Dzielenie ekranu -->
+    <div class="main-section" id="main-split">
+      <div class="main-header" onclick="toggleMain('split')">
+        <span class="main-arrow" id="marrow-split">▶</span>
+        <span>Dzielenie ekranu</span>
+      </div>
+      <div class="main-body" id="mbody-split">
+        <div class="tc-content">
+          <p class="section-desc">Zaznacz klipy video bezpośrednio na timeline, ustaw liczbę pól X/Y i kliknij zastosuj. Klipy zostaną automatycznie przeskalowane, wykadrowane i ustawione w siatce.</p>
+
+          <div class="split-layout">
+            <div class="split-controls">
+              <div class="split-grid">
+                <label>
+                  X / liczba kolumn
+                  <input id="splitX" type="number" min="1" max="12" value="4" />
+                </label>
+                <label>
+                  Y / liczba wierszy
+                  <input id="splitY" type="number" min="1" max="12" value="1" />
+                </label>
+              </div>
+
+              <div class="split-grid">
+                <label>
+                  Odstęp poziomy / px
+                  <input id="splitGapX" type="number" value="0" />
+                </label>
+                <label>
+                  Odstęp pionowy / px
+                  <input id="splitGapY" type="number" value="0" />
+                </label>
+              </div>
+
+              <label class="split-mode-label">
+                Tryb kadrowania
+                <select id="splitMode">
+                  <option value="fill" selected>Wypełnij ekran (Użyj efektu Crop)</option>
+                  <option value="fit">Pokaż pełne wideo (Nie używaj efektu Crop)</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="split-preview-wrap" title="Podgląd siatki 16:9">
+              <div id="splitPreview" class="split-preview"></div>
+            </div>
+          </div>
+
+          <input id="splitOrderByTracks" type="checkbox" checked style="display:none" />
+
+          <div class="row">
+            <button id="applySplitScreen">Zastosuj dzielenie ekranu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- GŁÓWNA ZAKŁADKA 4: Auto-Sync folderów systemowych -->
+    <div class="main-section" id="main-folder-sync">
+      <div class="main-header" onclick="toggleMain('folder-sync')">
+        <span class="main-arrow" id="marrow-folder-sync">▶</span>
+        <span class="main-title-text">Auto-Sync plików pomiędzy BIN'em, a folderem systemowym</span>
+        <button id="folderSyncModuleToggle" class="ios-toggle is-on" type="button" aria-label="Włącz lub wyłącz Auto-Sync folderów" aria-pressed="true">
+          <span class="ios-toggle-knob"></span>
+        </button>
+      </div>
+      <div class="main-body" id="mbody-folder-sync">
+        <div class="tc-content">
+          <p class="section-desc">Kliknij pole poniżej albo przeciągnij folder z Eksploratora plików. Wtyczka automatycznie utworzy BIN o tej samej nazwie i będzie go automatycznie odświeżać.</p>
+
+          <div id="folderSyncDrop" class="folder-sync-drop" role="button" tabindex="0" title="Kliknij, aby wybrać folder albo przeciągnij folder tutaj">
+            <div class="folder-sync-drop-title">Kliknij, albo przeciągnij folder tutaj!</div>
+            <div class="folder-sync-drop-subtitle">Drag &amp; Drop</div>
+          </div>
+
+          <div class="folder-sync-head">
+            <span>Nazwa folderu</span>
+            <span>Link</span>
+            <span>Ścieżka folderu systemowego</span>
+            <span>Synchronizacja podfolderów</span>
+            <span>Kolor</span>
+            <span>Status</span>
+            <span></span>
+          </div>
+          <div id="folderSyncList" class="folder-sync-list">
+            <div class="folder-sync-empty">Brak dodanych folderów do Auto-Sync.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MODAL potwierdzenia usuwania Auto-Sync -->
+    <div id="folderSyncConfirmOverlay" class="folder-sync-modal-overlay hidden">
+      <div class="folder-sync-modal">
+        <div id="folderSyncConfirmQuestion" class="folder-sync-modal-question">Czy chcesz usunąć folder z automatycznej synchronizacji?</div>
+        <div class="folder-sync-modal-actions">
+          <button id="folderSyncConfirmYes" class="folder-sync-modal-yes">TAK</button>
+          <button id="folderSyncConfirmNo" class="folder-sync-modal-no">NIE</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="folderSyncMissingOverlay" class="folder-sync-modal-overlay hidden">
+      <div class="folder-sync-modal">
+        <div id="folderSyncMissingQuestion" class="folder-sync-modal-question">Nie znaleziono folderu Auto-Sync.</div>
+        <div class="folder-sync-modal-actions">
+          <button id="folderSyncMissingOk" class="folder-sync-modal-no">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGI na dole -->
+    <div class="log-header" id="logToggle" onclick="toggleLog()">
+      <div class="log-title-wrap">
+        <span id="logArrow">▶</span> Logi <span class="log-hint">(kliknij, aby rozwinąć)</span>
+      </div>
+      <div class="log-toggles" onclick="event.stopPropagation();">
+        <label class="debug-toggle background-toggle" title="Włącza lub wyłącza automatyczne logi Auto-Sync i Organizer.">
+          <input id="backgroundLogsToggle" type="checkbox" />
+          <span>Logi AutoSync/Organizer/Timer</span>
+        </label>
+        <label class="debug-toggle" title="Włącza szczegółowe logi techniczne do diagnostyki.">
+          <input id="debugModeToggle" type="checkbox" />
+          <span>Debug Mode</span>
+        </label>
+      </div>
+    </div>
+    <pre id="log" class="log-hidden">Gotowe. Jeżeli autostart jest włączony, Auto-Check ruszy sam.</pre>
+
+  </div><!-- end scroll-wrap -->
+
+
+  <div id="shutterModalOverlay" class="shutter-modal-overlay hidden" aria-hidden="true">
+    <div class="shutter-modal-card" role="dialog" aria-modal="true" aria-labelledby="shutterModalTitle">
+      <div id="shutterModalTitle" class="shutter-modal-title">Shutter Angle</div>
+      <div class="shutter-modal-subtitle">Wpisz wartość od 0 do 360</div>
+      <input id="shutterModalInput" class="shutter-modal-input" type="number" min="0" max="360" step="1" value="360" />
+      <div class="shutter-modal-actions">
+        <button id="shutterModalCancel" class="shutter-modal-btn shutter-modal-cancel" type="button">Anuluj</button>
+        <button id="shutterModalSave" class="shutter-modal-btn shutter-modal-save" type="button">Zapisz</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="copyTextPositionModalOverlay" class="copy-text-modal-overlay hidden" aria-hidden="true">
+    <div class="copy-text-modal-card" role="dialog" aria-modal="true" aria-labelledby="copyTextPositionModalTitle">
+      <div id="copyTextPositionModalTitle" class="copy-text-modal-title">Copy Text</div>
+      <div class="copy-text-modal-question">Skopiowac rowniez pozycje tekstu?</div>
+      <div class="copy-text-modal-actions">
+        <button id="copyTextPositionNo" class="copy-text-modal-btn copy-text-modal-no" type="button">Tylko styl</button>
+        <button id="copyTextPositionYes" class="copy-text-modal-btn copy-text-modal-yes" type="button">Styl + pozycja</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="transform-tools-bar" aria-label="Transform Tools">
+    <div class="transform-tools-inner">
+      <div class="transform-tool-group" aria-label="Transform i Shutter">
+        <button id="transformSendKeysBtn" class="transform-tool-btn" title="Przenieś keyframe’y z Motion do efektu Transform i ustaw Shutter Angle" aria-label="Transform">
+          <img class="transform-tool-img" src="./icon/TRANSFORM.png" srcset="./icon/TRANSFORM.png 1x, ./icon/TRANSFORM_2X.png 2x" alt="" draggable="false" />
+          <span class="sr-only">Transform</span>
+        </button>
+        <button id="transformShutterBtn" class="transform-shutter-wrap" type="button" title="Ustaw Shutter Angle dla efektu Transform" aria-label="Ustaw Shutter Angle">
+          <img class="transform-shutter-img" src="./icon/SHUTTER.png" srcset="./icon/SHUTTER.png 1x, ./icon/SHUTTER_2X.png 2x" alt="Shutter" draggable="false" />
+          <span id="transformShutterValue" class="transform-shutter-value">360</span>
+          <input id="transformShutterAngle" type="hidden" value="360" />
+        </button>
+      </div>
+      <div class="transform-tool-separator" aria-hidden="true"></div>
+      <div class="transform-tool-group" aria-label="CopyText i PasteText">
+        <button id="copyTextStyleBtn" class="transform-tool-btn" title="Skopiuj atrybuty zaznaczonej grafiki/tekstu" aria-label="CopyText">
+          <img class="transform-tool-img" src="./icon/COPY_TEXT.png" srcset="./icon/COPY_TEXT.png 1x, ./icon/COPY_TEXT_2X.png 2x" alt="" draggable="false" />
+          <span class="sr-only">CopyText</span>
+        </button>
+        <button id="pasteTextStyleBtn" class="transform-tool-btn" title="Wklej ostatnio skopiowane atrybuty na zaznaczone grafiki/teksty" aria-label="PasteText">
+          <img class="transform-tool-img" src="./icon/PASTE_TEXT.png" srcset="./icon/PASTE_TEXT.png 1x, ./icon/PASTE_TEXT_2X.png 2x" alt="" draggable="false" />
+          <span class="sr-only">PasteText</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
